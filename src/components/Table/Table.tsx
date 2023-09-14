@@ -162,7 +162,7 @@ export const Table = <T extends { url?: string }>({
           <button
             className='pagination-button'
             onClick={() => {
-              tableInstance.setPageIndex(tableInstance.getPageCount());
+              tableInstance.setPageIndex(tableInstance.getPageCount() - 1);
             }}
             disabled={!tableInstance.getCanNextPage()}
           >
