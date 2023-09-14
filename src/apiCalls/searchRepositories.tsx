@@ -8,7 +8,7 @@ export const REPOSITORIES = 'REPOSITORIES';
 
 const MyOctokit = Octokit.plugin(paginateRest);
 const octokit = new MyOctokit({
-  //auth: process.env.NEXT_PUBLIC_ACCESS_TOKEN_GITHUB, //token can enable more requests
+  auth: process.env.NEXT_PUBLIC_ACCESS_TOKEN_GITHUB, //token can enable more requests
 });
 
 interface IRepositorySearchOptions {

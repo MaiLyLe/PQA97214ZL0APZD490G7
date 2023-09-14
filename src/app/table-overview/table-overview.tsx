@@ -40,7 +40,7 @@ export const TableOverview = () => {
   const formData = watch();
 
   //TODO: find type from octokit
-  const { isFetching, data } = useQuery<any>(
+  const { isFetching, data, isError } = useQuery<any>(
     [REPOSITORIES, formData?.organization?.value], //if organization changes, refetch
     () =>
       searchRepositories({

@@ -9,7 +9,7 @@ export type ListOrganizationsResponse =
   Endpoints['GET /organizations']['response'];
 
 const octokit = new Octokit({
-  //auth: process.env.NEXT_PUBLIC_ACCESS_TOKEN_GITHUB, //token can enable more requests
+  auth: process.env.NEXT_PUBLIC_ACCESS_TOKEN_GITHUB, //token can enable more requests
 });
 
 export const getOrganizations = async ({
