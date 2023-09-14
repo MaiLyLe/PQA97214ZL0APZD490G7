@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/table-overview',
+        permanent: true,
+      },
+    ];
+  },
   eslint: {
     dirs: ['src'],
   },
