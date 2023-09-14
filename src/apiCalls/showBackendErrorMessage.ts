@@ -9,6 +9,8 @@ const getMessage = (status?: number) => {
       return 'Not found. Try other search values or try again later.';
     case 429:
       return 'Nothing found based on your filtering values. Try searching and filtering for other values.';
+    case 422:
+      return 'The repositories from this organization cannot be searched either because the resources do not exist or you do not have permission to view them. Choose another organization.';
     default:
       return 'HTTP error. Try again later.';
   }

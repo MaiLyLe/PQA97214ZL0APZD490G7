@@ -68,12 +68,12 @@ export const AutoCompleteInput = <T extends FieldValues>({
     },
   });
 
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(field?.value?.value || '');
   //let's debounce the query to avoid unnecessary requests
   const [debouncedValue] = useDebounce(query, 300);
 
   //fetches options for the autocomplete dropdown
-  const fetchMutation = useQuery(
+  const queryReturnvalues = useQuery(
     [...fetchFunction.queryKey, debouncedValue],
     () => fetchFunction.function({ q: debouncedValue }),
     {
@@ -91,6 +91,7 @@ export const AutoCompleteInput = <T extends FieldValues>({
     }
   );
 
+  //defaultValues can be fetched beforehand or even on the server because they are static
   const [selectedOption, setSelectedOption] = useState(
     field.value || displayedOptions?.[0] || []
   );
@@ -152,7 +153,7 @@ export const AutoCompleteInput = <T extends FieldValues>({
                 'absolute left-0 right-0 top-[88px] z-20 mt-1 max-h-40 w-full overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none  sm:text-sm'
               )}
             >
-              {fetchMutation.isLoading ? (
+              {queryReturnvalues.isFetching ? (
                 <div className='p-2'>
                   <RowLoader />
                 </div>
