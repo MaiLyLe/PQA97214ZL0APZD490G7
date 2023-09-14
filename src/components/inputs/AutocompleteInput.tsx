@@ -3,12 +3,12 @@
 */
 import { Combobox } from '@headlessui/react';
 import { ErrorMessage } from '@hookform/error-message';
-import { MutationFunction, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { debounce } from 'lodash';
 import { useState } from 'react';
 import type { FieldValues, Path } from 'react-hook-form';
 import { useController, useFormContext } from 'react-hook-form';
+import { useDebounce } from 'use-debounce';
 
 import { RowLoader } from '@/components/RowLoader';
 
@@ -23,7 +23,10 @@ type AutoCompleteInputProps = {
   notFoundMessage: string;
   legend: string;
   defaultOptions?: Option[];
-  fetchMutationFunction: MutationFunction<Option[], { q: string }>;
+  fetchFunction: {
+    queryKey: string[];
+    function: (param: { q: string }) => Promise<Option[]>;
+  };
 } & React.ComponentPropsWithRef<'input'>;
 
 export type FormAutoCompleteInputProps<T extends FieldValues> = {
@@ -41,7 +44,7 @@ export const AutoCompleteInput = <T extends FieldValues>({
   notFoundMessage,
   shouldUnregister,
   legend,
-  fetchMutationFunction,
+  fetchFunction,
   ...rest
 }: FormAutoCompleteInputProps<T>) => {
   const [displayedOptions, setDisplayedOptions] = useState<Option[]>(
@@ -65,32 +68,35 @@ export const AutoCompleteInput = <T extends FieldValues>({
     },
   });
 
+  const [query, setQuery] = useState('');
+  //let's debounce the query to avoid unnecessary requests
+  const [debouncedValue] = useDebounce(query, 300);
+
   //fetches options for the autocomplete dropdown
-  const fetchMutation = useMutation({
-    mutationFn: fetchMutationFunction,
-    onSuccess: (data: Option[]) => {
-      setDisplayedOptions(data);
-    },
-    onError: (error: any) => {
-      showBackendErrorMessage(error);
-      if (!displayedOptions.length) {
-        setDisplayedOptions(defaultOptions || []);
-      }
-    },
-  });
+  const fetchMutation = useQuery(
+    [...fetchFunction.queryKey, debouncedValue],
+    () => fetchFunction.function({ q: debouncedValue }),
+    {
+      staleTime: 10,
+      enabled: !!debouncedValue,
+      onSuccess: (data: Option[]) => {
+        setDisplayedOptions(data);
+      },
+      onError: (error: any) => {
+        showBackendErrorMessage(error);
+        if (!displayedOptions.length) {
+          setDisplayedOptions(defaultOptions || []);
+        }
+      },
+    }
+  );
 
   const [selectedOption, setSelectedOption] = useState(
     field.value || displayedOptions?.[0] || []
   );
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //debounce is used to prevent too many requests to the github api
-    //fetching happens on change
-    const debouncedFunction = debounce(() => {
-      event.target.value !== '' &&
-        fetchMutation.mutate({ q: event.target.value });
-    }, 500);
-    debouncedFunction();
+    setQuery(event.target.value);
     if (required && event.target.value === '') {
       setError(name, { message: `Field ${name} is required` });
     } else {

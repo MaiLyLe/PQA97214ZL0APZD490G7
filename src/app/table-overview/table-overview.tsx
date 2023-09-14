@@ -15,7 +15,10 @@ import { FadeIn } from '@/components/transitions/FadeIn';
 
 import { ListOrganizationsResponse } from '@/apiCalls/getOrganizations';
 import { FIRST_ORGANIZATIONS } from '@/apiCalls/getOrganizations';
-import { getOrganizationsByQParam } from '@/apiCalls/getOrganizationsByQParam';
+import {
+  getOrganizationsByQParam,
+  ORGANIZATIONS_BY_Q_PARAM,
+} from '@/apiCalls/getOrganizationsByQParam';
 import {
   REPOSITORIES,
   searchRepositories,
@@ -40,7 +43,7 @@ export const TableOverview = () => {
   const formData = watch();
 
   //TODO: find type from octokit
-  const { isFetching, data, isError } = useQuery<any>(
+  const { isFetching, data } = useQuery<any>(
     [REPOSITORIES, formData?.organization?.value], //if organization changes, refetch
     () =>
       searchRepositories({
@@ -133,7 +136,10 @@ export const TableOverview = () => {
                 legend='Organization'
                 placeholder='Type in org name'
                 notFoundMessage='No organization with this name found.'
-                fetchMutationFunction={getOrganizationsByQParam}
+                fetchFunction={{
+                  queryKey: [ORGANIZATIONS_BY_Q_PARAM],
+                  function: getOrganizationsByQParam,
+                }}
               />
             </div>
           </FadeIn>
@@ -149,7 +155,10 @@ export const TableOverview = () => {
                 legend='Organization'
                 placeholder='Type in org name'
                 notFoundMessage='No organization with this name found.'
-                fetchMutationFunction={getOrganizationsByQParam}
+                fetchFunction={{
+                  queryKey: [ORGANIZATIONS_BY_Q_PARAM],
+                  function: getOrganizationsByQParam,
+                }}
               />
 
               <Input
