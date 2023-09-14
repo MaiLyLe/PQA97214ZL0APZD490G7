@@ -6,7 +6,7 @@ import { Octokit } from '@octokit/core';
 export const ORGANIZATIONS_BY_Q_PARAM = 'ORGANIZATIONS_BY_Q_PARAM';
 
 const octokit = new Octokit({
-  //auth: process.env.NEXT_PUBLIC_ACCESS_TOKEN_GITHUB, //token can enable more requests
+  auth: process.env.NEXT_PUBLIC_ACCESS_TOKEN_GITHUB, //token can enable more requests
 });
 
 export const getOrganizationsByQParam = async ({ q }: { q: string }) => {

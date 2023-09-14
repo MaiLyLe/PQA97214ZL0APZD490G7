@@ -16,5 +16,7 @@ const getMessage = (status?: number) => {
 
 //TODO: get type for error from octokit
 export const showBackendErrorMessage = (error: any) => {
-  toast.error(`${getMessage(error?.response?.status)}`);
+  toast.error(`${getMessage(error?.response?.status)}`, {
+    toastId: 'backendErrorMessage',
+  });
 };
